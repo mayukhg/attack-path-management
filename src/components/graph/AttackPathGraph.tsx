@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   ReactFlow,
   Background,
@@ -98,12 +98,8 @@ export function AttackPathGraph({ selectedPath, patchedNodes = new Set(), onNode
     return selectedPath.edges.map(edgeToFlow);
   }, [selectedPath]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
-  // Keep nodes/edges in sync when selectedPath or patchedNodes changes
-  useEffect(() => { setNodes(initialNodes); }, [initialNodes, setNodes]);
-  useEffect(() => { setEdges(initialEdges); }, [initialEdges, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges(eds => addEdge(params, eds)),
@@ -121,7 +117,8 @@ export function AttackPathGraph({ selectedPath, patchedNodes = new Set(), onNode
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
-        fitViewOptions={{ padding: 0.15 }}
+        fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.75 }}
         minZoom={0.3}
         maxZoom={2}
         onNodeClick={(_, node) => onNodeClick?.(node.id)}

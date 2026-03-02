@@ -105,6 +105,7 @@ export function AttackPaths() {
 
         <div className="flex-1 p-4">
           <AttackPathGraph
+            key={selectedPath.id}
             selectedPath={selectedPath}
             onNodeClick={handleNodeClick}
           />

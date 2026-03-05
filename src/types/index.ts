@@ -149,4 +149,72 @@ export type ViewId =
   | 'network-map'
   | 'identity'
   | 'remediation'
-  | 'risk-correlation';
+  | 'risk-correlation'
+  | 'ciso'
+  | 'security-architect'
+  | 'remediation-manager'
+  | 'soc-analyst'
+  | 'vulnerability-manager'
+  | 'red-team'
+  | 'grc-compliance';
+
+export interface ComplianceControl {
+  id: string;
+  framework: 'ISO27001' | 'SOC2' | 'NIST-CSF';
+  controlId: string;
+  title: string;
+  status: 'compliant' | 'at-risk' | 'non-compliant';
+  linkedAssets: string[];
+  evidenceAvailable: boolean;
+  lastAudit: string;
+  remediationEvidence?: string;
+}
+
+export interface SOCEvent {
+  id: string;
+  timestamp: string;
+  source: 'EDR' | 'CloudTrail' | 'SIEM' | 'IDS';
+  asset: string;
+  technique: string;
+  mitreId: string;
+  severity: Severity;
+  pathId?: string;
+  description: string;
+  investigated: boolean;
+}
+
+export interface VulnPathImpact {
+  cveId: string;
+  cvss: number;
+  cvssRank: number;
+  pathImpactRank: number;
+  pathsAffected: number;
+  assetsExposed: number;
+  exploitable: boolean;
+  patchBreaksChains: number;
+  description: string;
+  severity: Severity;
+}
+
+export interface RedTeamFinding {
+  id: string;
+  title: string;
+  technique: string;
+  mitreId: string;
+  discoveredBy: 'platform' | 'manual' | 'both';
+  severity: Severity;
+  verified: boolean;
+  pathId?: string;
+  notes?: string;
+}
+
+export interface CrownJewelRisk {
+  assetId: string;
+  assetName: string;
+  breachProbability: number;
+  hopsFromInternet: number;
+  financialImpact: number;
+  pathCount: number;
+  trend: 'up' | 'down' | 'stable';
+  trendDelta: number;
+}

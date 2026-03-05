@@ -7,6 +7,11 @@ import type {
   MITREMapping,
   NetworkBoundary,
   ADObject,
+  ComplianceControl,
+  SOCEvent,
+  VulnPathImpact,
+  RedTeamFinding,
+  CrownJewelRisk,
 } from '../types';
 
 // ─── Assets ─────────────────────────────────────────────────────────────────
@@ -676,4 +681,98 @@ export const severityDistribution = [
   { severity: 'High', count: 8, color: '#f97316' },
   { severity: 'Medium', count: 12, color: '#f59e0b' },
   { severity: 'Low', count: 19, color: '#3b82f6' },
+];
+
+// ─── Persona: CISO ───────────────────────────────────────────────────────────
+
+export const crownJewelRisks: CrownJewelRisk[] = [
+  { assetId: 'a6', assetName: 'Production Database', breachProbability: 94, hopsFromInternet: 5, financialImpact: 12400000, pathCount: 2, trend: 'up', trendDelta: 7 },
+  { assetId: 'a5', assetName: 'Domain Controller (DC01)', breachProbability: 91, hopsFromInternet: 4, financialImpact: 8700000, pathCount: 3, trend: 'up', trendDelta: 4 },
+  { assetId: 'a10', assetName: 'Azure Data Lake', breachProbability: 78, hopsFromInternet: 3, financialImpact: 6200000, pathCount: 1, trend: 'stable', trendDelta: 0 },
+];
+
+export const executiveTrendData = [
+  { month: 'Sep', risk: 62, paths: 2, jewels: 1 },
+  { month: 'Oct', risk: 65, paths: 2, jewels: 2 },
+  { month: 'Nov', risk: 58, paths: 3, jewels: 2 },
+  { month: 'Dec', risk: 71, paths: 3, jewels: 2 },
+  { month: 'Jan', risk: 79, paths: 4, jewels: 3 },
+  { month: 'Feb', risk: 83, paths: 4, jewels: 3 },
+  { month: 'Mar', risk: 87, paths: 4, jewels: 3 },
+];
+
+export const boardRecommendations = [
+  { id: 'r1', priority: 1, action: 'Fix S3 Bucket misconfiguration & rotate exposed SSH key', impact: 'Eliminates 3 of 4 critical attack paths', effort: 'Low', riskReduction: 31, owner: 'DevOps' },
+  { id: 'r2', priority: 2, action: 'Patch CVE-2021-42278 on Domain Controller', impact: 'Closes privilege escalation to Domain Admin', effort: 'Medium', riskReduction: 18, owner: 'IT Ops' },
+  { id: 'r3', priority: 3, action: 'Segment IT/OT network – isolate SCADA from Corporate LAN', impact: 'Removes OT breach path entirely', effort: 'High', riskReduction: 12, owner: 'OT Engineering' },
+];
+
+// ─── Persona: SOC Analyst ────────────────────────────────────────────────────
+
+export const socEvents: SOCEvent[] = [
+  { id: 'se1', timestamp: '2026-03-02T08:42:11Z', source: 'EDR', asset: 'portal.acme.com', technique: 'Path Traversal Exploit Attempt', mitreId: 'T1190', severity: 'critical', pathId: 'path1', description: 'SentinelOne detected Apache path traversal exploit matching CVE-2021-41773 on portal.acme.com. Process chain: httpd → /bin/sh → curl.', investigated: false },
+  { id: 'se2', timestamp: '2026-03-02T08:39:04Z', source: 'CloudTrail', asset: 'acme-devops-artifacts (S3)', technique: 'S3 GetObject – Unauthenticated', mitreId: 'T1530', severity: 'critical', pathId: 'path1', description: 'Anonymous GetObject call retrieved id_rsa SSH private key from s3://acme-devops-artifacts/keys/. Source IP: 203.0.113.45.', investigated: false },
+  { id: 'se3', timestamp: '2026-03-02T08:35:22Z', source: 'SIEM', asset: 'dev-server-01', technique: 'SSH Auth with Exposed Key', mitreId: 'T1552.001', severity: 'high', pathId: 'path1', description: 'Successful SSH login to dev-server-01 using the key recovered from S3 bucket. User: deploy-svc. First-seen source IP.', investigated: false },
+  { id: 'se4', timestamp: '2026-03-02T07:15:44Z', source: 'EDR', asset: 'dev-server-01', technique: 'Container Escape via runc', mitreId: 'T1611', severity: 'critical', pathId: 'path1', description: 'CVE-2019-5736 exploitation detected. Process runc spawned privileged shell outside container namespace. Host compromise likely.', investigated: true },
+  { id: 'se5', timestamp: '2026-03-02T06:58:33Z', source: 'IDS', asset: 'DC01.acme.local', technique: 'Kerberoasting – SPN Request Spike', mitreId: 'T1558.003', severity: 'high', pathId: 'path1', description: '47 Kerberos TGS requests for service SPNs from dev-server-01 in 90 seconds. Pattern matches Kerberoasting tool (Rubeus).', investigated: true },
+  { id: 'se6', timestamp: '2026-03-02T06:45:10Z', source: 'CloudTrail', asset: 'api-gw-prod.acme.com', technique: 'IMDSv1 Metadata Credential Access', mitreId: 'T1552.005', severity: 'high', pathId: 'path2', description: 'EC2 metadata endpoint queried for IAM credentials without IMDSv2 token. Wildcard role credentials retrieved.', investigated: false },
+  { id: 'se7', timestamp: '2026-03-02T04:10:05Z', source: 'EDR', asset: 'ws-jsmith-01', technique: 'PowerShell Download Cradle', mitreId: 'T1059.001', severity: 'medium', pathId: 'path3', description: 'Encoded PowerShell IEX download cradle executed. Payload retrieved from external C2: 185.220.101.42. Likely phishing delivery.', investigated: true },
+];
+
+export const mitreTimeline = [
+  { stage: 'Initial Access', time: '08:39', technique: 'T1190 – Exploit Public App', asset: 'portal.acme.com', severity: 'critical' as const },
+  { stage: 'Collection', time: '08:39', technique: 'T1530 – Data from Cloud Storage', asset: 'S3 Bucket', severity: 'critical' as const },
+  { stage: 'Credential Access', time: '08:35', technique: 'T1552.001 – Credentials in Files', asset: 'SSH Key', severity: 'high' as const },
+  { stage: 'Lateral Movement', time: '08:35', technique: 'T1021.004 – SSH', asset: 'dev-server-01', severity: 'high' as const },
+  { stage: 'Privilege Escalation', time: '07:15', technique: 'T1611 – Escape to Host', asset: 'dev-server-01', severity: 'critical' as const },
+  { stage: 'Credential Access', time: '06:58', technique: 'T1558.003 – Kerberoasting', asset: 'DC01', severity: 'high' as const },
+  { stage: 'Privilege Escalation', time: '06:50', technique: 'T1078.002 – Domain Accounts', asset: 'DC01', severity: 'critical' as const },
+];
+
+// ─── Persona: Vulnerability Manager ─────────────────────────────────────────
+
+export const vulnPathImpacts: VulnPathImpact[] = [
+  { cveId: 'CVE-2021-41773', cvss: 9.8, cvssRank: 1, pathImpactRank: 2, pathsAffected: 1, assetsExposed: 5, exploitable: true, patchBreaksChains: 3, description: 'Apache HTTP Server RCE – entry point for longest critical path', severity: 'critical' },
+  { cveId: 'CVE-2021-42278', cvss: 9.8, cvssRank: 2, pathImpactRank: 1, pathsAffected: 3, assetsExposed: 7, exploitable: true, patchBreaksChains: 4, description: 'noPac AD privilege escalation – choke point on 3 paths', severity: 'critical' },
+  { cveId: 'CVE-2020-0796',  cvss: 10.0, cvssRank: 3, pathImpactRank: 4, pathsAffected: 1, assetsExposed: 2, exploitable: true, patchBreaksChains: 1, description: 'SMBGhost on Shadow NAS – isolated path, no CMDB asset', severity: 'critical' },
+  { cveId: 'CVE-2019-5736',  cvss: 8.6, cvssRank: 4, pathImpactRank: 3, pathsAffected: 2, assetsExposed: 4, exploitable: true, patchBreaksChains: 2, description: 'runc container escape – pivot to host from container', severity: 'high' },
+  { cveId: 'CVE-2017-0144',  cvss: 9.3, cvssRank: 5, pathImpactRank: 6, pathsAffected: 1, assetsExposed: 1, exploitable: true, patchBreaksChains: 1, description: 'EternalBlue on EOL SCADA – isolated OT segment', severity: 'critical' },
+  { cveId: 'CVE-2023-44487', cvss: 7.5, cvssRank: 6, pathImpactRank: 7, pathsAffected: 0, assetsExposed: 0, exploitable: false, patchBreaksChains: 0, description: 'HTTP/2 Rapid Reset – DoS only, no verified attack path', severity: 'high' },
+  { cveId: 'CVE-2022-30190', cvss: 7.8, cvssRank: 7, pathImpactRank: 5, pathsAffected: 1, assetsExposed: 3, exploitable: false, patchBreaksChains: 1, description: 'Follina – present on workstations, path unverified', severity: 'high' },
+];
+
+// ─── Persona: Red Team Lead ──────────────────────────────────────────────────
+
+export const redTeamFindings: RedTeamFinding[] = [
+  { id: 'rt1', title: 'S3 Bucket Key Exfiltration → Dev Server Pivot', technique: 'Credential in Files + SSH Auth', mitreId: 'T1552.001', discoveredBy: 'both', severity: 'critical', verified: true, pathId: 'path1', notes: 'Platform discovered this path 6 days before engagement. Red team confirmed exploitable in 22 min.' },
+  { id: 'rt2', title: 'Kerberoasting → DA via noPac', technique: 'T1558.003 + T1078.002', mitreId: 'T1558.003', discoveredBy: 'both', severity: 'critical', verified: true, pathId: 'path1', notes: 'Both platform and red team identified. Red team used Rubeus, platform detected via SPN spike.' },
+  { id: 'rt3', title: 'IT/OT Flat Network → SCADA RCE', technique: 'EternalBlue lateral movement', mitreId: 'T1021.002', discoveredBy: 'platform', severity: 'critical', verified: true, pathId: 'path3', notes: 'Platform found this path. Red team had not scoped OT segment — coverage gap identified.' },
+  { id: 'rt4', title: 'IAM Wildcard Role → Cross-Account S3', technique: 'Cloud Instance Metadata API', mitreId: 'T1552.005', discoveredBy: 'both', severity: 'critical', verified: true, pathId: 'path2', notes: 'Independently discovered. Platform flagged 2 days earlier via CloudTrail anomaly.' },
+  { id: 'rt5', title: 'Docker Socket ACL Misconfiguration', technique: 'Container Escape to Host', mitreId: 'T1611', discoveredBy: 'manual', severity: 'high', verified: true, notes: 'Red team found during manual enumeration. Platform had flagged ACL but did not chain into full path.' },
+  { id: 'rt6', title: 'LSASS Dump via Cached Domain Creds', technique: 'OS Credential Dumping', mitreId: 'T1003.001', discoveredBy: 'manual', severity: 'high', verified: false, notes: 'Red team technique – platform does not yet model cached credential paths on workstations.' },
+  { id: 'rt7', title: 'Azure Data Lake via SSRF + IAM', technique: 'Server-Side Request Forgery', mitreId: 'T1567.002', discoveredBy: 'platform', severity: 'high', verified: false, pathId: 'path2', notes: 'Platform flagged as unverified (probability 0.64). Red team did not attempt during engagement.' },
+];
+
+// ─── Persona: GRC / Compliance ───────────────────────────────────────────────
+
+export const complianceControls: ComplianceControl[] = [
+  { id: 'cc1', framework: 'ISO27001', controlId: 'A.12.6.1', title: 'Management of Technical Vulnerabilities', status: 'at-risk', linkedAssets: ['a1', 'a3', 'a5', 'a8'], evidenceAvailable: true, lastAudit: '2026-01-15', remediationEvidence: 'CVE-2021-41773 patch scheduled for 2026-03-10. WAF rule active.' },
+  { id: 'cc2', framework: 'ISO27001', controlId: 'A.13.1.3', title: 'Segregation in Networks', status: 'non-compliant', linkedAssets: ['a3', 'a8'], evidenceAvailable: false, lastAudit: '2026-01-15' },
+  { id: 'cc3', framework: 'ISO27001', controlId: 'A.9.2.3', title: 'Management of Privileged Access Rights', status: 'at-risk', linkedAssets: ['a5', 'a9'], evidenceAvailable: true, lastAudit: '2026-02-01', remediationEvidence: 'Kerberoastable SPN remediation in progress – ticket INC-2847.' },
+  { id: 'cc4', framework: 'SOC2', controlId: 'CC6.1', title: 'Logical and Physical Access Controls', status: 'at-risk', linkedAssets: ['a2', 'a7'], evidenceAvailable: true, lastAudit: '2026-02-10', remediationEvidence: 'S3 bucket policy remediation scheduled. IAM role scope reduction approved.' },
+  { id: 'cc5', framework: 'SOC2', controlId: 'CC7.2', title: 'System Monitoring', status: 'non-compliant', linkedAssets: ['a7'], evidenceAvailable: false, lastAudit: '2026-02-10' },
+  { id: 'cc6', framework: 'SOC2', controlId: 'CC9.2', title: 'Risk Mitigation – Vendor/Third Party', status: 'compliant', linkedAssets: ['a10'], evidenceAvailable: true, lastAudit: '2026-02-20', remediationEvidence: 'Azure Data Lake private endpoint enforced. Public access disabled Feb 20.' },
+  { id: 'cc7', framework: 'NIST-CSF', controlId: 'ID.AM-2', title: 'Software platforms and applications inventoried', status: 'non-compliant', linkedAssets: ['a4', 'a8'], evidenceAvailable: false, lastAudit: '2026-01-20' },
+  { id: 'cc8', framework: 'NIST-CSF', controlId: 'PR.AC-4', title: 'Access permissions managed, least privilege', status: 'at-risk', linkedAssets: ['a5', 'a3'], evidenceAvailable: true, lastAudit: '2026-02-01', remediationEvidence: 'AD privilege review completed for Tier-0. Service account cleanup in progress.' },
+  { id: 'cc9', framework: 'NIST-CSF', controlId: 'DE.CM-7', title: 'Monitoring for unauthorized personnel/assets', status: 'at-risk', linkedAssets: ['a4', 'a8'], evidenceAvailable: true, lastAudit: '2026-02-15', remediationEvidence: 'Shadow IT NAS and SCADA HMI flagged in platform. CMDB update requested – pending IT Ops approval.' },
+];
+
+export const crownJewelTrend = [
+  { month: 'Sep 25', compliant: 12, atRisk: 3, nonCompliant: 1 },
+  { month: 'Oct 25', compliant: 11, atRisk: 4, nonCompliant: 1 },
+  { month: 'Nov 25', compliant: 13, atRisk: 3, nonCompliant: 0 },
+  { month: 'Dec 25', compliant: 10, atRisk: 4, nonCompliant: 2 },
+  { month: 'Jan 26', compliant: 9,  atRisk: 5, nonCompliant: 2 },
+  { month: 'Feb 26', compliant: 10, atRisk: 4, nonCompliant: 2 },
+  { month: 'Mar 26', compliant: 10, atRisk: 5, nonCompliant: 1 },
 ];

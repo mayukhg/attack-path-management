@@ -9,6 +9,13 @@ const viewTitles: Record<ViewId, { title: string; description: string }> = {
   identity: { title: 'Identity & Lateral Movement', description: 'Pillar 3 — AD privilege escalation & Blast Radius analysis' },
   remediation: { title: 'Adversarial Enrichment & Remediation', description: 'Pillar 4 — Choke points, What-If analysis & MITRE enrichment' },
   'risk-correlation': { title: 'Risk Factor & Path Correlation', description: 'Pillar 5 — Toxic combinations & contextual risk scoring' },
+  ciso: { title: 'CISO — Executive View', description: 'Board-ready risk narrative · Crown Jewel exposure · Strategic recommendations' },
+  'security-architect': { title: 'Security Architect — Architecture View', description: 'Boundary reachability matrix · Architectural gaps · Shadow IT & AD blast radius' },
+  'remediation-manager': { title: 'Remediation Manager — Patch Prioritization', description: 'ROI-based patch queue · What-If simulator · Virtual patching candidates' },
+  'soc-analyst': { title: 'SOC Analyst — Live Triage', description: 'Live alert feed · MITRE ATT&CK progression timeline · Adversary chain investigation' },
+  'vulnerability-manager': { title: 'Vulnerability Manager — Path-Contextualized CVEs', description: 'CVSS rank vs path impact rank · Patch impact calculator · Exploitability verification' },
+  'red-team': { title: 'Red Team Lead — Coverage Gap Analysis', description: 'Platform vs manual findings comparison · Path verification status · Detection gaps' },
+  'grc-compliance': { title: 'GRC / Compliance — Control Mapping', description: 'ISO 27001 · SOC 2 · NIST-CSF control status · Audit evidence · Compliance posture trend' },
 };
 
 interface HeaderProps {

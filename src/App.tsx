@@ -7,6 +7,13 @@ import { NetworkMap } from './views/NetworkMap';
 import { IdentityMovement } from './views/IdentityMovement';
 import { Remediation } from './views/Remediation';
 import { RiskCorrelation } from './views/RiskCorrelation';
+import { CISOView } from './views/personas/CISOView';
+import { SecurityArchitectView } from './views/personas/SecurityArchitectView';
+import { RemediationManagerView } from './views/personas/RemediationManagerView';
+import { SOCAnalystView } from './views/personas/SOCAnalystView';
+import { VulnerabilityManagerView } from './views/personas/VulnerabilityManagerView';
+import { RedTeamView } from './views/personas/RedTeamView';
+import { GRCComplianceView } from './views/personas/GRCComplianceView';
 import type { ViewId } from './types';
 import { dashboardStats } from './data/mockData';
 
@@ -18,6 +25,13 @@ function ActiveView({ view }: { view: ViewId }) {
     case 'identity': return <IdentityMovement />;
     case 'remediation': return <Remediation />;
     case 'risk-correlation': return <RiskCorrelation />;
+    case 'ciso': return <CISOView />;
+    case 'security-architect': return <SecurityArchitectView />;
+    case 'remediation-manager': return <RemediationManagerView />;
+    case 'soc-analyst': return <SOCAnalystView />;
+    case 'vulnerability-manager': return <VulnerabilityManagerView />;
+    case 'red-team': return <RedTeamView />;
+    case 'grc-compliance': return <GRCComplianceView />;
     default: return <Dashboard />;
   }
 }

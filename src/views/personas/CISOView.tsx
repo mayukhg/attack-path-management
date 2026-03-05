@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer,
   BarChart, Bar, Cell,
 } from 'recharts';
 import { crownJewelRisks, executiveTrendData, boardRecommendations, attackPaths } from '../../data/mockData';
@@ -11,6 +11,7 @@ import {
   AlertTriangle, CheckCircle2, ChevronRight, Shield,
   ArrowUpRight, Target,
 } from 'lucide-react';
+import { Tooltip } from '../../components/shared/Tooltip';
 import clsx from 'clsx';
 
 function BreachNarrativeCard() {
@@ -66,17 +67,24 @@ function CrownJewelCard({ cj }: { cj: typeof crownJewelRisks[0] }) {
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div className="text-center p-2 bg-surface-3 rounded-lg">
           <p className="text-2xl font-mono font-bold text-red-400">{cj.breachProbability}%</p>
-          <p className="text-[9px] text-slate-500 mt-0.5">Breach Probability</p>
+          <div className="flex items-center justify-center gap-1 mt-0.5">
+          <p className="text-[9px] text-slate-500">Breach Probability</p>
+          <Tooltip text="Modeled likelihood of a successful breach based on path count, exploitability, and asset exposure. Factors in attacker skill level and detection probability." />
+        </div>
         </div>
         <div className="text-center p-2 bg-surface-3 rounded-lg">
           <p className="text-2xl font-mono font-bold text-amber-400">{cj.hopsFromInternet}</p>
-          <p className="text-[9px] text-slate-500 mt-0.5">Hops from Internet</p>
+          <div className="flex items-center justify-center gap-1 mt-0.5">
+            <p className="text-[9px] text-slate-500">Hops from Internet</p>
+            <Tooltip text="Minimum number of lateral movement steps needed for an attacker to reach this asset from an internet-facing entry point." />
+          </div>
         </div>
       </div>
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-1.5 text-slate-400">
           <DollarSign size={12} className="text-red-400" />
           <span>Est. Impact: <span className="text-red-400 font-mono font-bold">{fmt(cj.financialImpact)}</span></span>
+          <Tooltip text="Estimated business impact of a successful breach, based on asset data classification, regulatory exposure, incident response cost, and business downtime." />
         </div>
         <span className="text-slate-600 font-mono">{cj.pathCount} active path{cj.pathCount > 1 ? 's' : ''}</span>
       </div>
@@ -146,7 +154,7 @@ export function CISOView() {
               </defs>
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
               <YAxis domain={[50, 100]} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} width={28} />
-              <Tooltip contentStyle={{ background: '#1e2640', border: '1px solid #2a3350', borderRadius: '8px', fontSize: '11px' }} />
+              <RechartsTooltip contentStyle={{ background: '#1e2640', border: '1px solid #2a3350', borderRadius: '8px', fontSize: '11px' }} />
               <Area type="monotone" dataKey="risk" stroke="#ef4444" strokeWidth={2} fill="url(#riskGrad)" dot={{ fill: '#ef4444', r: 3 }} name="Risk Score" />
             </AreaChart>
           </ResponsiveContainer>
@@ -155,15 +163,16 @@ export function CISOView() {
         <div className="bg-surface-2 rounded-xl border border-border p-5 flex flex-col gap-3">
           <h3 className="text-sm font-semibold text-slate-200">Board Summary</h3>
           {[
-            { label: 'Critical Attack Paths', value: '4', color: 'text-red-400', icon: Target },
-            { label: 'Crown Jewels Exposed', value: '3 / 3', color: 'text-amber-400', icon: Crown },
-            { label: 'Avg. Hops to Breach', value: '4.3', color: 'text-orange-400', icon: ChevronRight },
-            { label: 'Max Financial Impact', value: fmt(totalImpact), color: 'text-red-400', icon: DollarSign },
-            { label: 'Paths Eliminated (30d)', value: '12', color: 'text-emerald-400', icon: CheckCircle2 },
-          ].map(({ label, value, color, icon: Icon }) => (
+            { label: 'Critical Attack Paths', value: '4', color: 'text-red-400', icon: Target, tooltip: 'Complete adversarial chains with a verified exploitable route from an internet entry point to a Crown Jewel asset.' },
+            { label: 'Crown Jewels Exposed', value: '3 / 3', color: 'text-amber-400', icon: Crown, tooltip: 'All 3 Crown Jewel assets are currently reachable via at least one active attack path. 3/3 indicates total exposure.' },
+            { label: 'Avg. Hops to Breach', value: '4.3', color: 'text-orange-400', icon: ChevronRight, tooltip: 'Average number of lateral movement steps across all active paths from an internet entry point to a Crown Jewel.' },
+            { label: 'Max Financial Impact', value: fmt(totalImpact), color: 'text-red-400', icon: DollarSign, tooltip: 'Combined estimated breach impact across all exposed Crown Jewels, based on data classification, regulatory fines, and incident response cost.' },
+            { label: 'Paths Eliminated (30d)', value: '12', color: 'text-emerald-400', icon: CheckCircle2, tooltip: 'Attack chains closed this month through remediation. Tracks program effectiveness and remediation velocity.' },
+          ].map(({ label, value, color, icon: Icon, tooltip }) => (
             <div key={label} className="flex items-center gap-2">
               <Icon size={13} className={color} />
               <span className="text-[11px] text-slate-400 flex-1">{label}</span>
+              <Tooltip text={tooltip} />
               <span className={clsx('text-sm font-mono font-bold', color)}>{value}</span>
             </div>
           ))}

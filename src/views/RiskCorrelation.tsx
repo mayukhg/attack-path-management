@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Activity,
 } from 'lucide-react';
+import { Tooltip } from '../components/shared/Tooltip';
 import clsx from 'clsx';
 
 function ToxicCombinationCard({ asset }: { asset: GraphAsset }) {
@@ -128,19 +129,28 @@ function ContextualScorePanel({ asset }: { asset: GraphAsset }) {
       <div className="grid grid-cols-3 gap-2 mb-3">
         <div className="text-center p-2 bg-surface-0 rounded">
           <p className="text-sm font-mono font-bold text-slate-400">{asset.baseRiskScore}</p>
-          <p className="text-[9px] text-slate-600">Base Score</p>
+          <div className="flex items-center justify-center gap-0.5">
+            <p className="text-[9px] text-slate-600">Base Score</p>
+            <Tooltip text="Risk score derived from asset criticality, vulnerability severity, and business value — before contextual elevation factors are applied." />
+          </div>
         </div>
         <div className="text-center p-2 bg-surface-0 rounded">
           <p className={clsx('text-sm font-mono font-bold', isChoke ? 'text-purple-400' : 'text-slate-500')}>
             {isChoke ? `+${elevation}%` : '—'}
           </p>
-          <p className="text-[9px] text-slate-600">Elevation</p>
+          <div className="flex items-center justify-center gap-0.5">
+            <p className="text-[9px] text-slate-600">Elevation</p>
+            <Tooltip text="AC-2 Choke Point Elevation: Risk score increase applied when an asset bottlenecks multiple attack paths. Minimum +20% over base score." />
+          </div>
         </div>
         <div className="text-center p-2 bg-surface-0 rounded">
           <p className={clsx('text-sm font-mono font-bold',
             asset.riskScore >= 85 ? 'text-red-400' : asset.riskScore >= 70 ? 'text-orange-400' : 'text-slate-400'
           )}>{asset.riskScore}</p>
-          <p className="text-[9px] text-slate-600">Final Score</p>
+          <div className="flex items-center justify-center gap-0.5">
+            <p className="text-[9px] text-slate-600">Final Score</p>
+            <Tooltip text="Contextually-adjusted risk score after applying choke point elevation (AC-2) and noise suppression for non-reachable assets (AC-3)." />
+          </div>
         </div>
       </div>
 
@@ -178,10 +188,10 @@ export function RiskCorrelation() {
         {/* Scoring Overview */}
         <div className="grid grid-cols-4 gap-4">
           {[
-            { label: 'Toxic Combinations', value: toxicAssets.length, color: '#ef4444', icon: Layers, desc: '3+ critical factors intersecting' },
-            { label: 'Choke Point Elevation', value: `+20%+`, color: '#a855f7', icon: TrendingUp, desc: 'Min elevation for choke points (AC-2)' },
-            { label: 'Noise-Suppressed', value: `${nonReachable.length}`, color: '#64748b', icon: EyeOff, desc: 'Non-reachable assets dimmed (AC-3)' },
-            { label: 'Active Risk Factors', value: reachable.reduce((s, a) => s + a.riskFactors.filter(r => r.active).length, 0), color: '#f97316', icon: Activity, desc: 'Verified exploitable in context' },
+            { label: 'Toxic Combinations', value: toxicAssets.length, color: '#ef4444', icon: Layers, desc: '3+ critical factors intersecting', tooltip: 'Assets at the intersection of 3 or more critical risk factors on the same attack path. Exploiting them grants disproportionate access — remediation has amplified impact.' },
+            { label: 'Choke Point Elevation', value: `+20%+`, color: '#a855f7', icon: TrendingUp, desc: 'Min elevation for choke points (AC-2)', tooltip: 'Minimum risk score elevation applied to choke point assets (AC-2 algorithm). A node that bottlenecks multiple paths receives at least +20% above its base risk score.' },
+            { label: 'Noise-Suppressed', value: `${nonReachable.length}`, color: '#64748b', icon: EyeOff, desc: 'Non-reachable assets dimmed (AC-3)', tooltip: 'CVEs and risk factors on assets with no verified network path are suppressed (AC-3 Noise Suppression). This prevents alert fatigue from non-exploitable findings.' },
+            { label: 'Active Risk Factors', value: reachable.reduce((s, a) => s + a.riskFactors.filter(r => r.active).length, 0), color: '#f97316', icon: Activity, desc: 'Verified exploitable in context', tooltip: 'Individual risk conditions (CVEs, misconfigurations, ACL weaknesses) that are both present on a reachable asset AND part of a verified or modeled attack chain.' },
           ].map((stat) => {
             const Icon = stat.icon;
             return (
@@ -193,6 +203,7 @@ export function RiskCorrelation() {
                 <div className="flex items-center gap-2 mb-2">
                   <Icon size={14} style={{ color: stat.color }} />
                   <span className="text-[10px] text-slate-500 uppercase tracking-wider">{stat.label}</span>
+                  <Tooltip text={stat.tooltip} />
                 </div>
                 <p className="text-3xl font-mono font-bold" style={{ color: stat.color }}>{stat.value}</p>
                 <p className="text-[10px] text-slate-600 mt-1">{stat.desc}</p>

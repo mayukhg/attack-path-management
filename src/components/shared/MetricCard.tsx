@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 interface MetricCardProps {
   title: string;
@@ -9,6 +10,7 @@ interface MetricCardProps {
   trend?: number;
   severity?: 'critical' | 'high' | 'medium' | 'low' | 'neutral';
   highlight?: boolean;
+  tooltip?: string;
 }
 
 const severityBorder: Record<string, string> = {
@@ -27,7 +29,7 @@ const severityIcon: Record<string, string> = {
   neutral: 'bg-slate-700/50 text-slate-400',
 };
 
-export function MetricCard({ title, value, subtitle, icon: Icon, trend, severity = 'neutral', highlight }: MetricCardProps) {
+export function MetricCard({ title, value, subtitle, icon: Icon, trend, severity = 'neutral', highlight, tooltip }: MetricCardProps) {
   return (
     <div
       className={clsx(
@@ -38,7 +40,10 @@ export function MetricCard({ title, value, subtitle, icon: Icon, trend, severity
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">{title}</p>
+          <div className="flex items-center gap-1.5 mb-1">
+            <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">{title}</p>
+            {tooltip && <Tooltip text={tooltip} />}
+          </div>
           <p className={clsx(
             'text-3xl font-bold font-mono tracking-tight',
             severity === 'critical' ? 'text-red-400' :

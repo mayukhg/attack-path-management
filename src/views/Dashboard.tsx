@@ -54,6 +54,7 @@ export function Dashboard() {
           severity="critical"
           trend={dashboardStats.riskTrend}
           highlight
+          tooltip="Composite TrueRisk score (0–100) aggregating asset criticality, exploitability, reachability, and path length. Score above 80 indicates critical posture requiring escalation."
         />
         <MetricCard
           title="Critical Attack Paths"
@@ -61,6 +62,7 @@ export function Dashboard() {
           subtitle="4 active, verified paths"
           icon={GitFork}
           severity="critical"
+          tooltip="Complete adversarial chains from an internet-facing entry point to a Crown Jewel asset, verified as exploitable in your environment."
         />
         <MetricCard
           title="Crown Jewels at Risk"
@@ -68,6 +70,7 @@ export function Dashboard() {
           subtitle="Production DB · DC · Data Lake"
           icon={Crown}
           severity="high"
+          tooltip="High-value assets (databases, domain controllers, data lakes) reachable via at least one verified attack path. Breach of any Crown Jewel = critical incident."
         />
         <MetricCard
           title="Shadow IT Detected"
@@ -75,6 +78,7 @@ export function Dashboard() {
           subtitle="Not in CMDB · Internet-reachable"
           icon={Eye}
           severity="high"
+          tooltip="Assets discovered via network scanning that are absent from your CMDB. Unmanaged, unpatched, and often internet-reachable — represent blind-spot risk."
         />
       </div>
 
@@ -85,6 +89,7 @@ export function Dashboard() {
           subtitle="3+ critical risk factors intersecting"
           icon={Layers}
           severity="critical"
+          tooltip="Nodes where 3 or more critical risk factors converge on the same asset — such as an unpatched CVE, stored admin credential, and internet reachability. Exploiting these grants disproportionate access."
         />
         <MetricCard
           title="Choke Points"
@@ -92,6 +97,7 @@ export function Dashboard() {
           subtitle="Multi-path convergence nodes"
           icon={Zap}
           severity="medium"
+          tooltip="Single assets that appear in multiple attack paths. Remediating a choke point breaks several adversarial chains simultaneously — high ROI remediation targets."
         />
         <MetricCard
           title="Internet-Reachable Assets"
@@ -99,6 +105,7 @@ export function Dashboard() {
           subtitle={`of ${dashboardStats.totalAssets} total assets`}
           icon={Globe}
           severity="high"
+          tooltip="Assets with a confirmed routable path from the internet, either directly exposed or reachable through boundary traversal. Each represents a potential attacker entry point."
         />
         <MetricCard
           title="Paths Eliminated (30d)"
@@ -106,6 +113,7 @@ export function Dashboard() {
           subtitle="Avg. time to remediate: 4.2d"
           icon={TrendingUp}
           severity="neutral"
+          tooltip="Attack paths closed in the last 30 days through patching, network segmentation, or credential rotation. Indicates remediation program velocity."
         />
       </div>
 

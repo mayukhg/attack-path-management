@@ -5,6 +5,7 @@ import { RiskScore } from '../components/shared/RiskScore';
 import { attackPaths, assets, mitreMappings } from '../data/mockData';
 import type { AttackPath, GraphAsset } from '../types';
 import { ChevronRight, Shield, Target, Clock, CheckCircle2, AlertCircle, Layers } from 'lucide-react';
+import { Tooltip } from '../components/shared/Tooltip';
 import clsx from 'clsx';
 
 export function AttackPaths() {
@@ -248,15 +249,18 @@ export function AttackPaths() {
             <p className="text-xs text-slate-600 mt-1">to view asset details, vulnerabilities, and risk factors</p>
             <div className="mt-6 w-full space-y-2">
               <p className="text-[10px] uppercase tracking-wider text-slate-600 text-left">Path Stats</p>
-              {[
-                ['Entry Point', pathAssets[0]?.label ?? '-'],
-                ['Crown Jewel', pathAssets[pathAssets.length - 1]?.label ?? '-'],
-                ['Hops', selectedPath.nodes.length],
-                ['Verified', selectedPath.verified ? 'Yes' : 'No'],
-                ['Last Updated', new Date(selectedPath.lastUpdated).toLocaleDateString()],
-              ].map(([k, v]) => (
-                <div key={String(k)} className="flex justify-between text-xs">
-                  <span className="text-slate-500">{k}</span>
+              {([
+                ['Entry Point', pathAssets[0]?.label ?? '-', 'The internet-facing asset where the adversary begins the attack chain. Typically an exposed web app, cloud endpoint, or VPN gateway.'],
+                ['Crown Jewel', pathAssets[pathAssets.length - 1]?.label ?? '-', 'The high-value target asset at the end of the attack chain. Breach of this asset constitutes a critical security incident.'],
+                ['Hops', selectedPath.nodes.length, 'Number of distinct lateral movement steps in the attack chain from entry point to Crown Jewel. Fewer hops = faster attacker progression.'],
+                ['Verified', selectedPath.verified ? 'Yes' : 'No', 'Whether this path has been confirmed exploitable through red team testing or automated validation. Unverified paths are modeled but not confirmed.'],
+                ['Last Updated', new Date(selectedPath.lastUpdated).toLocaleDateString(), 'Date when the path model was last updated based on new asset data, CVE feeds, or configuration changes.'],
+              ] as [string, string | number, string][]).map(([k, v, tip]) => (
+                <div key={k} className="flex justify-between text-xs items-center">
+                  <div className="flex items-center gap-1">
+                    <span className="text-slate-500">{k}</span>
+                    <Tooltip text={tip} />
+                  </div>
                   <span className="text-slate-300 font-mono">{String(v)}</span>
                 </div>
               ))}

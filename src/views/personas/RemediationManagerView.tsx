@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Tooltip as InfoTooltip } from '../../components/shared/Tooltip';
 import { assets, whatIfScenarios, attackPaths } from '../../data/mockData';
 import { Badge } from '../../components/shared/Badge';
 import { RiskScore } from '../../components/shared/RiskScore';
@@ -72,15 +73,24 @@ export function RemediationManagerView() {
                 <div className="grid grid-cols-3 gap-1.5 text-center">
                   <div className="bg-surface-3 rounded p-1">
                     <p className="text-xs font-mono font-bold text-purple-400">{item.roiScore}</p>
-                    <p className="text-[8px] text-slate-600">ROI</p>
+                    <div className="flex items-center justify-center gap-0.5">
+                      <p className="text-[8px] text-slate-600">ROI</p>
+                      <InfoTooltip text="Composite ROI score (0–100) combining risk reduction per unit of effort. Higher = fix this first." />
+                    </div>
                   </div>
                   <div className="bg-surface-3 rounded p-1">
                     <p className="text-xs font-mono font-bold text-emerald-400">{item.pathsBroken}</p>
-                    <p className="text-[8px] text-slate-600">Paths</p>
+                    <div className="flex items-center justify-center gap-0.5">
+                      <p className="text-[8px] text-slate-600">Paths</p>
+                      <InfoTooltip text="Number of attack chains that would be broken by completing this remediation item." />
+                    </div>
                   </div>
                   <div className="bg-surface-3 rounded p-1">
                     <p className="text-xs font-mono font-bold" style={{ color: effortColors[item.effort] }}>{item.effort}</p>
-                    <p className="text-[8px] text-slate-600">Effort</p>
+                    <div className="flex items-center justify-center gap-0.5">
+                      <p className="text-[8px] text-slate-600">Effort</p>
+                      <InfoTooltip text="Estimated implementation effort: Low = hours/days, Medium = 1–2 weeks, High = weeks/requires architecture change." />
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-2 text-[9px]">
@@ -179,14 +189,17 @@ export function RemediationManagerView() {
               </div>
               <div className="grid grid-cols-4 gap-3 mb-3">
                 {[
-                  { label: 'Current Risk', value: currentRisk, color: 'text-red-400' },
-                  { label: 'Projected Risk', value: scenario.projectedRiskScore, color: 'text-emerald-400' },
-                  { label: 'Risk Reduction', value: `-${currentRisk - scenario.projectedRiskScore}`, color: 'text-emerald-400' },
-                  { label: 'Paths Eliminated', value: scenario.eliminatedPaths, color: 'text-purple-400' },
-                ].map(({ label, value, color }) => (
+                  { label: 'Current Risk', value: currentRisk, color: 'text-red-400', tooltip: 'Current composite TrueRisk score before any remediation is applied.' },
+                  { label: 'Projected Risk', value: scenario.projectedRiskScore, color: 'text-emerald-400', tooltip: 'Modeled risk score after this scenario is fully applied. Based on path elimination and risk factor removal.' },
+                  { label: 'Risk Reduction', value: `-${currentRisk - scenario.projectedRiskScore}`, color: 'text-emerald-400', tooltip: 'Point reduction in the TrueRisk score achieved by this remediation scenario.' },
+                  { label: 'Paths Eliminated', value: scenario.eliminatedPaths, color: 'text-purple-400', tooltip: 'Number of attack chains that would be broken by applying this remediation action.' },
+                ].map(({ label, value, color, tooltip }) => (
                   <div key={label} className="text-center p-2 bg-surface-3 rounded-lg">
                     <p className={clsx('text-xl font-mono font-bold', color)}>{value}</p>
-                    <p className="text-[9px] text-slate-500">{label}</p>
+                    <div className="flex items-center justify-center gap-1 mt-0.5">
+                      <p className="text-[9px] text-slate-500">{label}</p>
+                      <InfoTooltip text={tooltip} />
+                    </div>
                   </div>
                 ))}
               </div>

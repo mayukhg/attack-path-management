@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FileCheck2, CheckCircle2, AlertTriangle, XCircle, BarChart2, Download } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { Tooltip } from '../../components/shared/Tooltip';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 import { complianceControls, crownJewelTrend, crownJewelRisks } from '../../data/mockData';
 import type { ComplianceControl } from '../../types';
 import clsx from 'clsx';
@@ -94,14 +95,17 @@ export function GRCComplianceView() {
       {/* KPI Row */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Compliant Controls', value: `${compliantPct}%`, sub: `${countByStatus('compliant')} / ${total}`, color: 'text-emerald-400' },
-          { label: 'At-Risk Controls', value: countByStatus('at-risk'), sub: 'Remediation in progress', color: 'text-amber-400' },
-          { label: 'Non-Compliant', value: countByStatus('non-compliant'), sub: 'Immediate action needed', color: 'text-red-400' },
-          { label: 'Evidence Available', value: `${Math.round((complianceControls.filter(c => c.evidenceAvailable).length / total) * 100)}%`, sub: `${complianceControls.filter(c => c.evidenceAvailable).length} of ${total} controls`, color: 'text-blue-400' },
+          { label: 'Compliant Controls', value: `${compliantPct}%`, sub: `${countByStatus('compliant')} / ${total}`, color: 'text-emerald-400', tooltip: 'Controls with sufficient evidence of implementation and no active attack path currently undermining their stated objective.' },
+          { label: 'At-Risk Controls', value: countByStatus('at-risk'), sub: 'Remediation in progress', color: 'text-amber-400', tooltip: 'Controls where remediation is in progress or an active attack path could undermine the control objective. Evidence may be partial.' },
+          { label: 'Non-Compliant', value: countByStatus('non-compliant'), sub: 'Immediate action needed', color: 'text-red-400', tooltip: 'Controls with no evidence of implementation and/or open audit findings. Require immediate remediation for regulatory attestation.' },
+          { label: 'Evidence Available', value: `${Math.round((complianceControls.filter(c => c.evidenceAvailable).length / total) * 100)}%`, sub: `${complianceControls.filter(c => c.evidenceAvailable).length} of ${total} controls`, color: 'text-blue-400', tooltip: 'Controls with documented audit evidence (tickets, WAF rules, access logs) that can be presented during a regulatory audit or compliance review.' },
         ].map(k => (
           <div key={k.label} className="bg-surface-1 border border-border rounded-xl p-4">
             <p className={clsx('text-2xl font-bold', k.color)}>{k.value}</p>
-            <p className="text-xs text-slate-500 mt-1">{k.label}</p>
+            <div className="flex items-center gap-1 mt-1">
+              <p className="text-xs text-slate-500">{k.label}</p>
+              <Tooltip text={k.tooltip} />
+            </div>
             <p className="text-xs text-slate-600 mt-0.5">{k.sub}</p>
           </div>
         ))}
@@ -175,7 +179,7 @@ export function GRCComplianceView() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e2a3a" />
                 <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 10 }} />
                 <YAxis tick={{ fill: '#64748b', fontSize: 10 }} />
-                <Tooltip
+                <RechartsTooltip
                   contentStyle={{ background: '#0f1623', border: '1px solid #1e2a3a', borderRadius: 8, fontSize: 11 }}
                   labelStyle={{ color: '#94a3b8' }}
                 />
@@ -207,11 +211,17 @@ export function GRCComplianceView() {
                     <p className={clsx('text-base font-bold', cj.breachProbability >= 90 ? 'text-red-400' : cj.breachProbability >= 75 ? 'text-orange-400' : 'text-amber-400')}>
                       {cj.breachProbability}%
                     </p>
-                    <p className="text-xs text-slate-500">breach prob.</p>
+                    <div className="flex items-center justify-end gap-1">
+                      <p className="text-xs text-slate-500">breach prob.</p>
+                      <Tooltip text="Modeled probability of a successful breach based on path count, exploitability score, and detection coverage. Relevant for risk acceptance decisions." />
+                    </div>
                   </div>
                   <div className="text-right flex-shrink-0 border-l border-border pl-3 ml-1">
                     <p className="text-sm font-bold text-red-300">${(cj.financialImpact / 1_000_000).toFixed(1)}M</p>
-                    <p className="text-xs text-slate-500">est. impact</p>
+                    <div className="flex items-center justify-end gap-1">
+                      <p className="text-xs text-slate-500">est. impact</p>
+                      <Tooltip text="Estimated business impact of breach, combining data classification, regulatory fines, incident response cost, and operational downtime." />
+                    </div>
                   </div>
                 </div>
               ))}

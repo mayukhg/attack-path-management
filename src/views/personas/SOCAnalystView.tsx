@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Radio, CheckCircle2, ExternalLink, ChevronDown, ChevronRight, Shield, Eye } from 'lucide-react';
 import { Badge } from '../../components/shared/Badge';
+import { Tooltip } from '../../components/shared/Tooltip';
 import { socEvents, mitreTimeline } from '../../data/mockData';
 import type { SOCEvent } from '../../types';
 import clsx from 'clsx';
@@ -119,14 +120,17 @@ export function SOCAnalystView() {
       {/* KPI Row */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Open Events', value: uninvestigated, color: 'text-red-400' },
-          { label: 'Critical Severity', value: critical, color: 'text-orange-400' },
-          { label: 'Active Paths Involved', value: 2, color: 'text-fuchsia-400' },
-          { label: 'Investigated Today', value: socEvents.filter(e => e.investigated).length, color: 'text-emerald-400' },
+          { label: 'Open Events', value: uninvestigated, color: 'text-red-400', tooltip: 'Alerts not yet reviewed or marked as resolved by the SOC team. Sorted by severity and time of detection.' },
+          { label: 'Critical Severity', value: critical, color: 'text-orange-400', tooltip: 'Events with confirmed exploit activity or active adversary presence — require immediate triage before end of current shift.' },
+          { label: 'Active Paths Involved', value: 2, color: 'text-fuchsia-400', tooltip: 'Distinct attack paths associated with at least one open alert. Indicates how many concurrent adversarial chains are active.' },
+          { label: 'Investigated Today', value: socEvents.filter(e => e.investigated).length, color: 'text-emerald-400', tooltip: 'Events reviewed and marked as investigated during the current shift. Tracks SOC throughput and coverage.' },
         ].map(k => (
           <div key={k.label} className="bg-surface-1 border border-border rounded-xl p-4">
             <p className={clsx('text-2xl font-bold', k.color)}>{k.value}</p>
-            <p className="text-xs text-slate-500 mt-1">{k.label}</p>
+            <div className="flex items-center gap-1 mt-1">
+              <p className="text-xs text-slate-500">{k.label}</p>
+              <Tooltip text={k.tooltip} />
+            </div>
           </div>
         ))}
       </div>
@@ -223,15 +227,24 @@ export function SOCAnalystView() {
             <div className="mt-4 grid grid-cols-3 gap-3 text-center">
               <div className="bg-surface-0 border border-border rounded-lg p-3">
                 <p className="text-lg font-bold text-red-400">7</p>
-                <p className="text-xs text-slate-500">Total Hops</p>
+                <div className="flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-xs text-slate-500">Total Hops</p>
+                  <Tooltip text="Number of distinct lateral movement steps in the reconstructed adversary chain from initial access to the target." />
+                </div>
               </div>
               <div className="bg-surface-0 border border-border rounded-lg p-3">
                 <p className="text-lg font-bold text-orange-400">4h 32m</p>
-                <p className="text-xs text-slate-500">Dwell Time</p>
+                <div className="flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-xs text-slate-500">Dwell Time</p>
+                  <Tooltip text="Elapsed time between the earliest detected technique and the most recent activity on this path. Longer dwell time means more time for damage." />
+                </div>
               </div>
               <div className="bg-surface-0 border border-border rounded-lg p-3">
                 <p className="text-lg font-bold text-fuchsia-400">4</p>
-                <p className="text-xs text-slate-500">MITRE Tactics</p>
+                <div className="flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-xs text-slate-500">MITRE Tactics</p>
+                  <Tooltip text="Number of distinct ATT&CK tactic categories (e.g. Initial Access, Lateral Movement, Privilege Escalation) observed in the attack chain." />
+                </div>
               </div>
             </div>
           </div>

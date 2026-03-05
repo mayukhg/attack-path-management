@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Crosshair, CheckCircle2, AlertTriangle, Monitor, User, Minus } from 'lucide-react';
+import { Tooltip } from '../../components/shared/Tooltip';
 import { redTeamFindings } from '../../data/mockData';
 import type { RedTeamFinding } from '../../types';
 import clsx from 'clsx';
@@ -85,14 +86,17 @@ export function RedTeamView() {
       {/* Coverage Summary */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Platform + Manual Coverage', value: `${coverageScore}%`, color: 'text-emerald-400', sub: `${bothCount + platformOnly} of ${total} findings` },
-          { label: 'Found by Both', value: bothCount, color: 'text-emerald-400', sub: 'High confidence' },
-          { label: 'Platform Only (gaps for RT)', value: platformOnly, color: 'text-blue-400', sub: 'RT scope gaps' },
-          { label: 'Manual Only (gaps for platform)', value: manualOnly, color: 'text-orange-400', sub: 'Detection gaps' },
+          { label: 'Platform + Manual Coverage', value: `${coverageScore}%`, color: 'text-emerald-400', sub: `${bothCount + platformOnly} of ${total} findings`, tooltip: 'Percentage of total findings detected by the automated platform (either independently or together with the red team). Indicates platform detection breadth.' },
+          { label: 'Found by Both', value: bothCount, color: 'text-emerald-400', sub: 'High confidence', tooltip: 'Findings confirmed independently by both the automated platform and manual red team — highest confidence results requiring immediate remediation.' },
+          { label: 'Platform Only (gaps for RT)', value: platformOnly, color: 'text-blue-400', sub: 'RT scope gaps', tooltip: 'Attack paths found by the platform that were not tested by the red team. Consider expanding red team engagement scope to cover these in the next cycle.' },
+          { label: 'Manual Only (gaps for platform)', value: manualOnly, color: 'text-orange-400', sub: 'Detection gaps', tooltip: 'Findings discovered manually by the red team that the platform did not detect. These represent detection gaps to improve in the platform logic.' },
         ].map(k => (
           <div key={k.label} className="bg-surface-1 border border-border rounded-xl p-4">
             <p className={clsx('text-2xl font-bold', k.color)}>{k.value}</p>
-            <p className="text-xs text-slate-500 mt-1">{k.label}</p>
+            <div className="flex items-center gap-1 mt-1">
+              <p className="text-xs text-slate-500">{k.label}</p>
+              <Tooltip text={k.tooltip} />
+            </div>
             <p className="text-xs text-slate-600 mt-0.5">{k.sub}</p>
           </div>
         ))}

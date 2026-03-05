@@ -3,6 +3,7 @@ import { adObjects, assets } from '../data/mockData';
 import { Badge } from '../components/shared/Badge';
 import { RiskScore } from '../components/shared/RiskScore';
 import type { ADObject } from '../types';
+import { Tooltip } from '../components/shared/Tooltip';
 import {
   User,
   Users,
@@ -191,9 +192,12 @@ function BlastRadiusView() {
         })}
       </div>
 
-      <p className="text-xs text-slate-500 text-center mt-2">
-        {affectedAssets.length} assets within blast radius · {dc.chokePointDownstreamPaths} total attack paths through DC01
-      </p>
+      <div className="flex items-center justify-center gap-1 mt-2">
+        <p className="text-xs text-slate-500 text-center">
+          {affectedAssets.length} assets within blast radius · {dc.chokePointDownstreamPaths} total attack paths through DC01
+        </p>
+        <Tooltip text="Blast Radius: the set of assets directly or transitively accessible if the Domain Controller is compromised. Includes all assets where DC01 holds admin/control rights." />
+      </div>
     </div>
   );
 }

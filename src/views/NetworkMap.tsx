@@ -14,6 +14,7 @@ import {
   XCircle,
   ArrowRight,
 } from 'lucide-react';
+import { Tooltip } from '../components/shared/Tooltip';
 import clsx from 'clsx';
 
 const segmentIcons: Record<string, React.ElementType> = {
@@ -65,15 +66,24 @@ function BoundaryCard({ boundary, boundaryAssets, selected, onClick }: BoundaryC
       <div className="grid grid-cols-3 gap-2 mb-2">
         <div className="text-center">
           <p className="text-lg font-bold font-mono text-slate-200">{boundaryAssets.length}</p>
-          <p className="text-[10px] text-slate-500">Assets</p>
+          <div className="flex items-center justify-center gap-0.5">
+            <p className="text-[10px] text-slate-500">Assets</p>
+            <Tooltip text="Total managed assets discovered within this network segment, including CMDB-registered and network-scanned assets." />
+          </div>
         </div>
         <div className="text-center">
           <p className={clsx('text-lg font-bold font-mono', shadowIT.length > 0 ? 'text-fuchsia-400' : 'text-slate-600')}>{shadowIT.length}</p>
-          <p className="text-[10px] text-slate-500">Shadow IT</p>
+          <div className="flex items-center justify-center gap-0.5">
+            <p className="text-[10px] text-slate-500">Shadow IT</p>
+            <Tooltip text="Assets in this segment not present in the CMDB — unmanaged, unpatched, and not covered by your vulnerability management program." />
+          </div>
         </div>
         <div className="text-center">
           <p className={clsx('text-lg font-bold font-mono', toxic.length > 0 ? 'text-red-400' : 'text-slate-600')}>{toxic.length}</p>
-          <p className="text-[10px] text-slate-500">Toxic</p>
+          <div className="flex items-center justify-center gap-0.5">
+            <p className="text-[10px] text-slate-500">Toxic</p>
+            <Tooltip text="Assets with 3 or more critical risk factors converging — such as an unpatched CVE, stored credentials, and internet reachability occurring simultaneously." />
+          </div>
         </div>
       </div>
       {shadowIT.length > 0 && (

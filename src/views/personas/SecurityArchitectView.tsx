@@ -1,6 +1,7 @@
 import { assets, networkBoundaries, adObjects, attackPaths } from '../../data/mockData';
 import { Badge } from '../../components/shared/Badge';
 import { RiskScore } from '../../components/shared/RiskScore';
+import { Tooltip } from '../../components/shared/Tooltip';
 import {
   HardHat, Eye, AlertTriangle, ArrowRight,
   Network, Cloud, Server, Cpu, Globe, Shield,
@@ -43,7 +44,10 @@ function BoundaryMatrix() {
 
   return (
     <div className="bg-surface-2 rounded-xl border border-border p-5">
-      <h3 className="text-sm font-semibold text-slate-200 mb-1">Cross-Boundary Reachability Matrix</h3>
+      <div className="flex items-center gap-2 mb-1">
+        <h3 className="text-sm font-semibold text-slate-200">Cross-Boundary Reachability Matrix</h3>
+        <Tooltip text="Each cell shows how many attack paths cross the boundary FROM the row segment TO the column segment. Red cells indicate critical-severity crossings requiring architectural controls." />
+      </div>
       <p className="text-xs text-slate-500 mb-4">Number of attack paths traversing each boundary pair</p>
       <div className="overflow-x-auto">
         <table className="w-full text-[10px]">
@@ -169,7 +173,7 @@ export function SecurityArchitectView() {
                 <div className="flex justify-between"><span className="text-slate-500">IP</span><span className="font-mono text-slate-300">{asset.ip ?? asset.hostname}</span></div>
                 <div className="flex justify-between"><span className="text-slate-500">Segment</span><span className="font-mono text-slate-300">{asset.segment}</span></div>
                 <div className="flex justify-between"><span className="text-slate-500">CMDB</span><span className="text-red-400 font-semibold">NOT REGISTERED</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">CVEs</span><span className="text-red-400 font-mono">{asset.vulnerabilities.length}</span></div>
+                <div className="flex justify-between items-center"><span className="text-slate-500">CVEs</span><div className="flex items-center gap-1"><span className="text-red-400 font-mono">{asset.vulnerabilities.length}</span><Tooltip text="Number of known vulnerabilities on this unmanaged asset. Since it's not in the CMDB, these CVEs are not tracked in your patch management workflow." /></div></div>
               </div>
               <div className="mt-2 flex gap-1 flex-wrap">
                 {asset.vulnerabilities.map(v => (
@@ -190,7 +194,10 @@ export function SecurityArchitectView() {
             <p className="text-xs text-slate-500">Assets impacted if Domain Controller is compromised</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-xs font-mono text-purple-400">{blastRadiusAsset.chokePointDownstreamPaths} paths</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-mono text-purple-400">{blastRadiusAsset.chokePointDownstreamPaths} paths</span>
+              <Tooltip text="Number of downstream attack paths that flow through this asset. Compromising the Domain Controller exposes all assets reachable from it." />
+            </div>
             <RiskScore score={blastRadiusAsset.riskScore} size="sm" showLabel={false} />
           </div>
         </div>

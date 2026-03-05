@@ -18,6 +18,7 @@ import {
   Flame,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { Tooltip } from '../components/shared/Tooltip';
 
 const mitreTypeColors: Record<string, string> = {
   'Initial Access': '#ef4444',
@@ -204,24 +205,36 @@ export function Remediation() {
             <div className="grid grid-cols-4 gap-4">
               <div className="text-center p-3 bg-surface-3 rounded-lg">
                 <p className="text-2xl font-mono font-bold text-red-400">{currentGlobalRisk}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">Current Risk</p>
+                <div className="flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-[10px] text-slate-500">Current Risk</p>
+                  <Tooltip text="Current composite TrueRisk score before any remediation action is applied." />
+                </div>
               </div>
               <div className="flex items-center justify-center text-slate-600">
                 <ChevronRight size={24} />
               </div>
               <div className="text-center p-3 bg-emerald-900/20 border border-emerald-500/20 rounded-lg">
                 <p className="text-2xl font-mono font-bold text-emerald-400">{projectedRisk}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">Projected Risk</p>
+                <div className="flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-[10px] text-slate-500">Projected Risk</p>
+                  <Tooltip text="Modeled risk score after the selected remediation scenario is fully applied. Based on path elimination and risk factor removal." />
+                </div>
               </div>
               <div className="text-center p-3 bg-surface-3 rounded-lg">
                 <p className="text-2xl font-mono font-bold text-emerald-400">-{riskDelta}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">Risk Reduction</p>
+                <div className="flex items-center justify-center gap-1 mt-0.5">
+                  <p className="text-[10px] text-slate-500">Risk Reduction</p>
+                  <Tooltip text="Point reduction in the TrueRisk score achieved by completing this remediation. Higher = better return on security investment." />
+                </div>
               </div>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="p-3 bg-surface-3 rounded-lg">
-                <p className="text-[10px] text-slate-500 mb-1">Paths Eliminated</p>
+                <div className="flex items-center gap-1 mb-1">
+                  <p className="text-[10px] text-slate-500">Paths Eliminated</p>
+                  <Tooltip text="Number of attack chains that would be broken by applying this remediation action." />
+                </div>
                 <div className="flex items-center gap-2">
                   <GitFork size={14} className="text-purple-400" />
                   <span className="text-lg font-mono font-bold text-purple-400">{selectedScenario.eliminatedPaths}</span>
